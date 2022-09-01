@@ -1,0 +1,25 @@
+{
+  "schemaName": "user-events",
+  "dimensionFieldSpecs": [
+    {
+      "name": "userID",
+      "dataType": "STRING"
+    },
+    {
+      "name": "eventID",
+      "eventID": "STRING"
+    },
+    {
+      "name": "userAction",
+      "eventID": "STRING"
+    }
+  ],
+  "dateTimeFieldSpecs": [
+    {
+      "name": "eventTimestamp",
+      "dataType": "LONG",
+      "format": "1:MILLISECONDS:EPOCH",
+      "granularity": "1:MILLISECONDS"
+    }
+  ]
+}
