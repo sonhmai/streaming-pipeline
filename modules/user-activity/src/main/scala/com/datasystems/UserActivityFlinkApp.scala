@@ -4,16 +4,18 @@ import org.apache.flink.api.common.eventtime.WatermarkStrategy
 import org.apache.flink.connector.kafka.source.KafkaSource
 import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer
 import org.apache.flink.streaming.api.scala._
-import com.datasystems.model.UserEvent
-import com.datasystems.serde.UserEventDeserializer
 
-object UserActivityMain {
+import com.datasystems.webanalytics.UserEvent
+import com.datasystems.webanalytics.kafka.UserEventDeserializer
+
+object UserActivityFlinkApp {
   def main(args: Array[String]): Unit = {
 
     val env = StreamExecutionEnvironment.getExecutionEnvironment
     val brokers = "localhost:9092"
 
-    val kafkaSource = KafkaSource.builder[UserEvent]()
+    val kafkaSource = KafkaSource
+      .builder[UserEvent]()
       .setBootstrapServers(brokers)
       .setTopics("input-user-events")
       .setGroupId("user-events-group")

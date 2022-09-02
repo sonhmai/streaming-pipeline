@@ -27,4 +27,39 @@ services:
       - "9092:9092/tcp"
     deploy:
       replicas: 1
-
+#
+#  connect-file-pulse:
+#    image: streamthoughts/kafka-connect-file-pulse:latest
+#    container_name: connect
+#    depends_on:
+#      - kafka
+#    ports:
+#      - "8083:8083"
+#      - "8000:8000"
+#    environment:
+#      CONNECT_BOOTSTRAP_SERVERS: 'broker:29092'
+#      CONNECT_REST_ADVERTISED_HOST_NAME: connect
+#      CONNECT_REST_PORT: 8083
+#      CONNECT_GROUP_ID: compose-connect-group
+#      CONNECT_CONFIG_STORAGE_TOPIC: docker-connect-configs
+#      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+#      CONNECT_OFFSET_FLUSH_INTERVAL_MS: 10000
+#      CONNECT_OFFSET_STORAGE_TOPIC: docker-connect-offsets
+#      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+#      CONNECT_STATUS_STORAGE_TOPIC: docker-connect-status
+#      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+#      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.storage.StringConverter
+#      CONNECT_VALUE_CONVERTER: io.confluent.connect.avro.AvroConverter
+#      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+#      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+#      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+#      CONNECT_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+#      # kafka-connect-file-pulse is installed as a confluent-hub component
+#      CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components/"
+#      CONNECT_LOG4J_ROOT_LOGLEVEL: "INFO"
+#      # CONNECT_LOG4J_LOGGERS: io.streamthoughts=DEBUG,org.apache.zookeeper=ERROR,org.I0Itec.zkclient=ERROR,org.reflections=ERROR
+#      # Uncomment for debugging the connector during development cycle
+#      # KAFKA_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,address=8000,suspend=n"
+#    volumes:
+#      - ./connect-data:/tmp/connect-data
+#
