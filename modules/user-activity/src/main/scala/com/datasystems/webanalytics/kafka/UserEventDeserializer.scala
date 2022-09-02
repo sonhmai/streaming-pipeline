@@ -1,5 +1,6 @@
-package com.datasystems.serde
-import com.datasystems.model.UserEvent
+package com.datasystems.webanalytics.kafka
+
+import com.datasystems.webanalytics.UserEvent
 import org.apache.flink.api.common.typeinfo.TypeInformation
 import org.apache.flink.connector.kafka.source.reader.deserializer.KafkaRecordDeserializationSchema
 import org.apache.flink.util.Collector
