@@ -2,7 +2,7 @@ import sbt._
 import Dependencies._
 
 ThisBuild / name := "streaming-pipeline"
-ThisBuild / scalaVersion := "2.12.16"  // TODO - use Flink java lib to use scala 2.13
+ThisBuild / scalaVersion := "2.13.8"
 
 ThisBuild / resolvers ++= Seq(
   "Confluent Maven Repo" at "https://packages.confluent.io/maven/",

@@ -1,8 +1,8 @@
 package com.datasystems.webanalytics
 
 import com.datasystems.webanalytics.Actions.UserAction
-import io.circe.Encoder
-import io.circe.generic.semiauto.deriveEncoder
+import io.circe.{Decoder, Encoder}
+import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 
 import java.util.UUID
 
@@ -25,5 +25,10 @@ object UserEvent {
       Encoder.encodeEnumeration(Actions)
     lazy implicit val UserEventEncoder: Encoder[UserEvent] =
       deriveEncoder[UserEvent]
+
+    lazy implicit val UserActionDecoder: Decoder[UserAction] =
+      Decoder.decodeEnumeration(Actions)
+    lazy implicit val UserEventDecoder: Decoder[UserEvent] =
+      deriveDecoder[UserEvent]
   }
 }
