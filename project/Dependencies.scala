@@ -3,7 +3,7 @@ import sbt._
 object Dependencies {
 
   object Versions {
-    lazy val flinkVersion = "1.15.1"
+    lazy val flinkVersion = "1.15.2"
     lazy val log4sVersion = "1.10.0"
     lazy val kafkaClientVersion = "3.2.1"
     lazy val typesafeConfigVersion = "1.4.2"
@@ -16,16 +16,9 @@ object Dependencies {
 
   import Versions._
 
-  private lazy val flinkScalaDependencies: Seq[ModuleID] = Seq(
-    "org.apache.flink" %% "flink-scala" % flinkVersion % "provided",
-    "org.apache.flink" %% "flink-streaming-scala" % flinkVersion % "provided"
+  private lazy val flinkDependencies: Seq[ModuleID] = Seq(
+    "org.apache.flink" % "flink-streaming-java" % flinkVersion % "provided"
   )
-
-  private lazy val circeDependencies = Seq(
-    "io.circe" %% "circe-core",
-    "io.circe" %% "circe-generic",
-    "io.circe" %% "circe-parser"
-  ).map(_ % circeVersion)
 
   private lazy val flinkTest = Seq(
     "org.apache.flink" % "flink-test-utils" % flinkVersion % Test
@@ -34,6 +27,12 @@ object Dependencies {
   private lazy val flinkKafka: Seq[ModuleID] = Seq(
     "org.apache.flink" % "flink-connector-kafka" % flinkVersion
   )
+
+  private lazy val circeDependencies = Seq(
+    "io.circe" %% "circe-core",
+    "io.circe" %% "circe-generic",
+    "io.circe" %% "circe-parser"
+  ).map(_ % circeVersion)
 
   private lazy val testDependencies = Seq(
     "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
@@ -53,7 +52,7 @@ object Dependencies {
     "com.typesafe" % "config" % typesafeConfigVersion
   )
 
-  lazy val userActivityDependencies: Seq[ModuleID] = flinkScalaDependencies ++
+  lazy val userActivityDependencies: Seq[ModuleID] = flinkDependencies ++
     flinkTest ++
     flinkKafka ++
     circeDependencies ++
