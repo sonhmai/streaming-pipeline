@@ -6,10 +6,16 @@ import org.apache.flink.api.common.state.{MapState, MapStateDescriptor}
 
 /**
  *  Dedup events using eventID, keyed by UserEvent.userID
+ *
+ *  Notes
+ *  - is there a KeyedRichFilterFunction version in order to partition the state by
+ *  key? yes, use `KeyedProcessFunction` in DataStream API.
+ *
  *  TODO
  *    - how to clean state periodically?
  *    - is this state OperatorState or KeyedState? how to scale & make sure that it can
  *    works globally on the whole stream but not locally on a stream partition?
+ *
  *
   */
 class DedupRichFilter extends RichFilterFunction[UserEvent] {

@@ -1,15 +1,17 @@
 # streaming-pipeline
 Building POC of streaming pipeline with Flink, Kafka, Pinot
 
-- Type of event time in Flink app?
-
 TODO
-- [x] Kafka + message producer
+- [x] Kafka + message producer with Kafka client
 - [ ] (Optional) Kafka producer with Monix
 - [x] Flink dummy forwarding app
 - [ ] Flink deduplication app
-- [ ] Pinot
+- [ ] Flink app basic metrics and state monitoring (state size,..)
+- [ ] Add Pinot to the pipeline
 - [ ] Ingest Kafka to Pinot
+- [ ] Kafka-Flink: Resiliency in case of failed serialization Kafka record
+- [ ] Exactly once Flink + Kafka
+- [ ] Exactly once Kafka + Pinot
 
 ## Quickstart
 
@@ -105,12 +107,31 @@ Available state
 
 - when to use what? KafkaRecordSerializationSchema, KafkaRecordSerializationSchemaBuilder, KafkaSerializerWrapper
     - `KafkaRecordSerializationSchemaBuilder` should be entry point when trying
-    to serialize elements to `kafka.clients.Producer.ProducerRecord`
+    to serialize elements to `kafka.clients.Producer.ProducerRecord`. Access the builder
+    via `KafkaRecordSerializationSchema.builder[T]()`
     - `KafkaSerializerWrapper` is not marked as public, so it should not be used.
 
+> When to use RichFunction over Function?
+- need to manage the function life cycle
+- need to access runtime context
+
+> Difference between RichFunction and ProcessFunction?
+- ProcessFunction is in DataStream API `flink-streaming` org.apache.flink.streaming.api.functions
+, while RichFunction is in common API `flink-core` org.apache.flink.api.common.functions
+- ProcessFunction extends RichFunction -> can access setup, teardown, runtime
+context API if RichFunction
+
+> Can a state like `MapState` or `ValueState` be used in RichFilterFunction?
+- yes if this is used on a KeyedStream, i.e. after a keyBy method
+
+
+
+## Concepts
+`Operator` is a source, a sink, or it applies an operation to one or more inputs,
+producing a result.
 
 ## Common Issues
->If use scala dependencies, use Scala <= 2.12.8, [if not you have to build for yourself](https://nightlies.apache.org/flink/flink-docs-release-1.15/docs/dev/configuration/advanced/#scala-versions)
+> If use scala dependencies, use Scala <= 2.12.8, [if not you have to build for yourself](https://nightlies.apache.org/flink/flink-docs-release-1.15/docs/dev/configuration/advanced/#scala-versions)
 
 Scala versions after 2.12.8 are not binary compatible with previous 
 2.12.x versions. This prevents the Flink project from upgrading its 
@@ -142,13 +163,13 @@ sbt uses coursier lib cache on MacOS `~/Library/Caches/Coursier/v1/https/`
 # produce to Kafka topic using console producer
 docker exec --interactive --tty streaming-kafka-1 kafka-console-producer \
 --bootstrap-server localhost:9092 \
---topic quickstart
+--topic input-user-events
 
 # consumer from the end (latest)          
 docker exec --interactive --tty streaming-kafka-1 \
 kafka-console-consumer \
 --bootstrap-server localhost:9092 \
---topic quickstart 
+--topic input-user-events 
 ```
 
 ## References

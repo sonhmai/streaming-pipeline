@@ -2,12 +2,21 @@ package com.datasystems
 
 import com.datasystems.webanalytics.UserEvent
 import com.datasystems.webanalytics.config.UserActivityAppConfig
-import com.datasystems.webanalytics.kafka.{UserEventDeserializer, UserEventSerializer}
+import com.datasystems.webanalytics.kafka.{
+  UserEventDeserializer,
+  UserEventSerializer
+}
+import com.datasystems.webanalytics.operator.DedupRichFilter
 import org.apache.flink.api.common.eventtime.WatermarkStrategy
+import org.apache.flink.api.java.functions.KeySelector
 import org.apache.flink.connector.base.DeliveryGuarantee
-import org.apache.flink.connector.kafka.sink.{KafkaRecordSerializationSchema, KafkaSink}
+import org.apache.flink.connector.kafka.sink.{
+  KafkaRecordSerializationSchema,
+  KafkaSink
+}
 import org.apache.flink.connector.kafka.source.KafkaSource
 import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer
+import org.apache.flink.streaming.api.datastream.DataStream
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment
 
 object UserActivityFlinkApp {
@@ -44,12 +53,20 @@ object UserActivityFlinkApp {
       .setRecordSerializer(serializer)
       .build()
 
-    env
+    val userEvents: DataStream[UserEvent] = env
       .fromSource[UserEvent](
         kafkaSource,
         WatermarkStrategy.noWatermarks(),
         "user-events"
       )
+
+    val keySelector = new KeySelector[UserEvent, String] {
+      override def getKey(value: UserEvent): String = value.userID
+    }
+
+    userEvents
+      .keyBy(keySelector)
+      .filter(new DedupRichFilter)
       .sinkTo(kafkaSink)
 
     env.execute(this.getClass.getSimpleName)
