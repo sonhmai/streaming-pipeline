@@ -2,10 +2,10 @@ package com.datasystems
 
 import com.datasystems.webanalytics.UserEvent
 import com.datasystems.webanalytics.config.UserActivityAppConfig
-import com.datasystems.webanalytics.kafka.UserEventDeserializer
+import com.datasystems.webanalytics.kafka.{UserEventDeserializer, UserEventSerializer}
 import org.apache.flink.api.common.eventtime.WatermarkStrategy
 import org.apache.flink.connector.base.DeliveryGuarantee
-import org.apache.flink.connector.kafka.sink.{KafkaSink, KafkaSinkBuilder}
+import org.apache.flink.connector.kafka.sink.{KafkaRecordSerializationSchema, KafkaSink}
 import org.apache.flink.connector.kafka.source.KafkaSource
 import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment
@@ -15,28 +15,41 @@ object UserActivityFlinkApp {
 
     val env = StreamExecutionEnvironment.getExecutionEnvironment()
     val config = UserActivityAppConfig(
-      kafkaBrokers = "localhost:9092"
+      kafkaBrokers = "localhost:9092",
+      kafkaInputTopic = "input-user-events",
+      kafkaInputConsumerGroupId = "user-events-group",
+      kafkaOutputTopic = "output-user-events"
     )
 
     val kafkaSource: KafkaSource[UserEvent] = KafkaSource
-      .builder()
+      .builder[UserEvent]()
       .setBootstrapServers(config.kafkaBrokers)
-      .setTopics("input-user-events")
-      .setGroupId("user-events-group")
-      .setStartingOffsets(OffsetsInitializer.earliest())
+      .setTopics(config.kafkaInputTopic)
+      .setGroupId(config.kafkaInputConsumerGroupId)
+      .setStartingOffsets(OffsetsInitializer.latest())
       .setDeserializer(new UserEventDeserializer())
       .build()
 
-    // TODO - add deserialization into UserEvent message
+    val serializer: KafkaRecordSerializationSchema[UserEvent] =
+      KafkaRecordSerializationSchema
+        .builder[UserEvent]()
+        .setTopic(config.kafkaOutputTopic)
+        .setValueSerializationSchema(new UserEventSerializer())
+        .build()
 
     val kafkaSink: KafkaSink[UserEvent] = KafkaSink
-      .builder()
-      .setDeliverGuarantee(DeliveryGuarantee.EXACTLY_ONCE)
+      .builder[UserEvent]()
+      .setDeliverGuarantee(DeliveryGuarantee.NONE)
       .setBootstrapServers(config.kafkaBrokers)
+      .setRecordSerializer(serializer)
       .build()
 
     env
-      .fromSource(kafkaSource, WatermarkStrategy.noWatermarks(), "user-events")
+      .fromSource[UserEvent](
+        kafkaSource,
+        WatermarkStrategy.noWatermarks(),
+        "user-events"
+      )
       .sinkTo(kafkaSink)
 
     env.execute(this.getClass.getSimpleName)

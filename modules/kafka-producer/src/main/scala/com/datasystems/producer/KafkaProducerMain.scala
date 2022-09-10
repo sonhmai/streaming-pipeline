@@ -8,7 +8,7 @@ object KafkaProducerMain {
 //    val filename = envProps.getString("input.json.base.dir")
 //    val kafkaTopic = envProps.getString("topic")
 
-    val producer = new KafkaClientProducer(kafkaTopic = "quickstart")
+    val producer = new KafkaClientProducer(kafkaTopic = "input-user-events")
     producer.produceRandomlyForever()
 
   }
