@@ -130,13 +130,13 @@ context API if RichFunction
 `Operator` is a source, a sink, or it applies an operation to one or more inputs,
 producing a result.
 
+
 ## Common Issues
 > If use scala dependencies, use Scala <= 2.12.8, [if not you have to build for yourself](https://nightlies.apache.org/flink/flink-docs-release-1.15/docs/dev/configuration/advanced/#scala-versions)
 
 Scala versions after 2.12.8 are not binary compatible with previous 
 2.12.x versions. This prevents the Flink project from upgrading its 
 2.12.x builds beyond 2.12.8.
----
 
 > When running Flink in IDE, `Caused by: java.lang.ClassNotFoundException`
 
@@ -147,7 +147,6 @@ IntelliJ IDEA: Go to Run > Edit Configurations > Modify options >
 Select include dependencies with "Provided" scope. 
 This run configuration will now include all required classes to 
 run the application from within the IDE
----
 
 > Using IntelliJ IDEA, error Library does not match byte code when viewing 
 > source of Kafka/ Flink
@@ -156,6 +155,7 @@ Probaby because of 2 library depends on 1 lib of different version -> fix, isola
 the dependency, remove the cached libs and reindex.
 
 sbt uses coursier lib cache on MacOS `~/Library/Caches/Coursier/v1/https/`
+
 
 ## Command Cheatsheet
 
