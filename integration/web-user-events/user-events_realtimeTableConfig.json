@@ -3,9 +3,9 @@
   "tableType": "REALTIME",
   "segmentsConfig": {
     "timeColumnName": "eventTimestamp",
-    "timeType": "MILLiSECONDS",
+    "timeType": "MILLISECONDS",
     "schemaName": "user-events",
-    "replicasPerPartition": 2
+    "replicasPerPartition": 1
   },
   "tenants": {},
   "tableIndexConfig": {
@@ -13,13 +13,15 @@
     "streamConfigs": {
       "streamType": "kafka",
       "stream.kafka.consumer.type": "lowlevel",
-      "stream.kafka.topic.name": "topic-user-events",
+      "stream.kafka.topic.name": "input-user-events",
       "stream.kafka.decoder.class.name": "org.apache.pinot.plugin.stream.kafka.KafkaJSONMessageDecoder",
-      "stream.kafka.broker.list": "kafka:9092",
+      "stream.kafka.broker.list": "kafka:29092",
+      "stream.kafka.zk.broker.url": "zookeeper:32181",
+      "security.protocol": "PLAINTEXT" ,
       "realtime.segment.flush.threshold.rows":  "0",
       "realtime.segment.flush.threshold.time":  "24h",
       "realtime.segment.flush.threshold.segment.size":  "50M",
-      "stream.kafka.consumer.prop.auto.offset.reset": "smallest"
+      "stream.kafka.consumer.prop.auto.offset.reset": "largest"
     }
   },
   "metadata": {

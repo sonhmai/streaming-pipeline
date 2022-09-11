@@ -7,12 +7,14 @@
     },
     {
       "name": "eventID",
-      "eventID": "STRING"
+      "dataType": "STRING"
     },
     {
       "name": "userAction",
-      "eventID": "STRING"
+      "dataType": "STRING"
     }
+  ],
+  "metricFieldSpecs": [
   ],
   "dateTimeFieldSpecs": [
     {
