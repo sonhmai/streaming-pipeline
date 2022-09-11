@@ -18,7 +18,7 @@ services:
     depends_on:
       - zookeeper
     environment:
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://broker:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
       KAFKA_BROKER_ID: 1
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
@@ -27,7 +27,41 @@ services:
       - "9092:9092/tcp"
     deploy:
       replicas: 1
-#
+
+  pinot-controller:
+    image: apachepinot/pinot:latest
+    command: "StartController -zkAddress zookeeper:32181"
+    container_name: "pinot-controller"
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    environment:
+      JAVA_OPTS: "-Dplugins.dir=/opt/pinot/plugins -Xms1G -Xmx4G"
+    depends_on:
+      - zookeeper
+
+  pinot-broker:
+    image: apachepinot/pinot:latest
+    command: "StartBroker -zkAddress zookeeper:32181"
+    restart: unless-stopped
+    container_name: "pinot-broker"
+    ports:
+      - "8099:8099"
+    environment:
+      JAVA_OPTS: "-Dplugins.dir=/opt/pinot/plugins -Xms4G -Xmx4G"
+    depends_on:
+      - pinot-controller
+
+  pinot-server:
+    image: apachepinot/pinot:latest
+    command: "StartServer -zkAddress zookeeper:32181"
+    restart: unless-stopped
+    container_name: "pinot-server"
+    environment:
+      JAVA_OPTS: "-Dplugins.dir=/opt/pinot/plugins"
+    depends_on:
+      - pinot-broker
+
 #  connect-file-pulse:
 #    image: streamthoughts/kafka-connect-file-pulse:latest
 #    container_name: connect
